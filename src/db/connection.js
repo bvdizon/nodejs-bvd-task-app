@@ -7,5 +7,3 @@ mongoose.connect('mongodb://localhost/bvd-todo', {
   useCreateIndex: true,
   useFindAndModify: false,
 });
-
-module.exports = mongoose;

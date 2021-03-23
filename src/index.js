@@ -8,10 +8,12 @@ require('./db/connection');
 
 // importing routers
 const todoRouter = require('./routers/todo');
+const userRouter = require('./routers/user');
 
 // express app customization
 app.use(express.json());
 app.use(todoRouter);
+app.use(userRouter);
 
 // listening to express server
 app.listen(PORT, () => {

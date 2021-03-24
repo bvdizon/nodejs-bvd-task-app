@@ -5,6 +5,9 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// importing model
+const Todo = require('../models/todo');
+
 // schema setup for User
 const userSchema = mongoose.Schema({
   name: {
@@ -57,6 +60,9 @@ const userSchema = mongoose.Schema({
  * Note: using regular function expression to use "this" keyword
  * Note: checks if password key is updated on save ( post )
  *
+ * Note: for 'save' this will happen before Document.prototype.save() will happen
+ * Note: for 'remove' this will happen before Schema.prototype.remove() method will happen
+ *
  */
 userSchema.pre('save', async function (next) {
   const user = this;
@@ -66,8 +72,16 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('remove', async function (next) {
+  const user = this;
+
+  await Todo.deleteMany({ owner: user._id });
+
+  next();
+});
+
 /**
- * Statics ( Mongoose Schemas )
+ * Statics ( Mongoose Schemas ) --- instance method
  *
  * Do not declare statics using ES6 arrow functions (=>).
  * Arrow functions explicitly prevent binding this.
@@ -90,7 +104,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 };
 
 /**
- * Generating a token ( user login and create user )
+ * Generating a token ( user login and create user ) --- Models method
  *
  * @tutorial https://www.npmjs.com/package/jsonwebtoken
  * @returns token
@@ -113,11 +127,12 @@ userSchema.methods.generateAuthToken = async function () {
 };
 
 /**
- * Return public data only
+ * Return public data only --- Models method
  *
+ * Note: delete --- will hide (only) the specified property on response *
  * @returns public data
+ *
  */
-
 userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();

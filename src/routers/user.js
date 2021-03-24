@@ -3,6 +3,7 @@ const router = new express.Router();
 
 // importing middlewares
 const auth = require('../middleware/auth');
+const Todo = require('../models/todo');
 
 // importing models
 const User = require('../models/user');
@@ -109,5 +110,17 @@ router.patch('/users/me', auth, async (req, res) => {
     res.status(500).send(`Update failed.`);
   }
 });
+
+// route to delete a user
+router.delete('/users/me', auth, async (req, res) => {
+  try {
+    await req.user.remove();
+
+    res.status(200).send(`Profile deleted: ${req.user.name}`);
+  } catch (error) {
+    res.status(500).send('Unable to delete user profile.');
+  }
+});
+
 // exporting router
 module.exports = router;

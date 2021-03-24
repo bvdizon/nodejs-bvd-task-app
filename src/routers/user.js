@@ -1,6 +1,9 @@
 const express = require('express');
 const router = new express.Router();
 
+// importing middlewares
+const auth = require('../middleware/auth');
+
 // importing models
 const User = require('../models/user');
 
@@ -38,5 +41,21 @@ router.post('/users/login', async (req, res) => {
   }
 });
 
+// logging a user out
+router.post('/users/logout', auth, async (req, res) => {
+  try {
+    // remove the token from the current tokens property of a user
+    req.user.tokens = req.user.tokens.filter(
+      (token) => token.token !== req.token
+    );
+
+    // save changes to mongodb
+    await req.user.save();
+
+    res.send('You have been logged off from the session.');
+  } catch (error) {
+    res.status(500).send('Logout failed.');
+  }
+});
 // exporting router
 module.exports = router;

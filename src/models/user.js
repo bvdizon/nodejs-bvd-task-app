@@ -88,15 +88,26 @@ userSchema.statics.findByCredentials = async (email, password) => {
   return user;
 };
 
+/**
+ * Generating a token ( user login and create user )
+ *
+ * @tutorial https://www.npmjs.com/package/jsonwebtoken
+ * @returns token
+ *
+ */
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
 
+  // generating jwt
   const token = jwt.sign({ _id: user._id.toString() }, 'ilovenodejs');
 
+  // appending token on each session or login to tokens property or user schema
   user.tokens = user.tokens.concat({ token });
 
+  // saving the user to db with jwt
   await user.save();
 
+  // sending the token value back to the caller of the function
   return token;
 };
 

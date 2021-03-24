@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "mongodb": "Z:/Programs/MongoDB/bin/mongod.exe --dbpath=Z:/Programs/MongoDB-data"
+    "mongodb": "Z:/Programs/MongoDB/bin/mongod.exe --dbpath=Z:/Programs/MongoDB-data",
+    "dev": "nodemon C:/Users/bvdiz/OneDrive/Desktop/nodejs-bvd-todo-app/src/index.js"
   },
   "keywords": [],
   "author": "Brian Dizon",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
-    "mongoose": "^5.12.2"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.2",
+    "validator": "^13.5.2"
   }
 }

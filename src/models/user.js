@@ -112,6 +112,22 @@ userSchema.methods.generateAuthToken = async function () {
   return token;
 };
 
+/**
+ * Return public data only
+ *
+ * @returns public data
+ */
+
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password;
+  delete userObject.tokens;
+
+  return userObject;
+};
+
 // compiling schema to User model
 const User = mongoose.model('User', userSchema);
 

@@ -58,6 +58,21 @@ router.post('/users/logout', auth, async (req, res) => {
   }
 });
 
+// route to log a user out on all sessions
+router.post('/users/logoutall', auth, async (req, res) => {
+  try {
+    // remove all okens from the current tokens property of a user
+    req.user.tokens = [];
+
+    // save changes to mongodb
+    await req.user.save();
+
+    res.send('You have been logged off on all devices.');
+  } catch (error) {
+    res.status(500).send('Logout failed.');
+  }
+});
+
 // route to check current user profile
 router.get('/users/me', auth, async (req, res) => {
   try {

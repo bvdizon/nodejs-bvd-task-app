@@ -10,7 +10,10 @@ router.post('/users', async (req, res) => {
 
   try {
     await user.save();
-    res.send(user);
+
+    const token = await user.generateAuthToken();
+
+    res.send({ user, token });
   } catch (error) {
     res.status(500).send('Unable to create user.');
   }
@@ -20,7 +23,9 @@ router.post('/users', async (req, res) => {
 router.post('/users/login', async (req, res) => {
   const user = await User.findByCredentials(req.body.email, req.body.password);
   try {
-    res.send(`Success: ${user}`);
+    const token = await user.generateAuthToken();
+
+    res.send({ user, token });
   } catch (error) {
     res.status(404).send('Login failed.');
   }

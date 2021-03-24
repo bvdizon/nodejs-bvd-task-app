@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 // importing npm packages
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // schema setup for User
 const userSchema = mongoose.Schema({
@@ -32,6 +33,14 @@ const userSchema = mongoose.Schema({
     trim: true,
     minLength: 6,
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 /**
@@ -77,6 +86,18 @@ userSchema.statics.findByCredentials = async (email, password) => {
   if (!isMatched) throw new Error('Wrong email or password.');
 
   return user;
+};
+
+userSchema.methods.generateAuthToken = async function () {
+  const user = this;
+
+  const token = jwt.sign({ _id: user._id.toString() }, 'ilovenodejs');
+
+  user.tokens = user.tokens.concat({ token });
+
+  await user.save();
+
+  return token;
 };
 
 // compiling schema to User model

@@ -55,6 +55,7 @@ const userSchema = mongoose.Schema({
  * @tutorial https://www.npmjs.com/package/bcryptjs#hashs-salt-callback-progresscallback
  *
  * Note: using regular function expression to use "this" keyword
+ * Note: checks if password key is updated on save ( post )
  *
  */
 userSchema.pre('save', async function (next) {

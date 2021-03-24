@@ -19,7 +19,7 @@ router.post('/users', async (req, res) => {
     const token = await user.generateAuthToken();
 
     // sending updated user and the session token
-    res.send({ user, token });
+    res.status(201).send({ user, token });
   } catch (error) {
     res.status(500).send('Unable to create user.');
   }
@@ -35,13 +35,13 @@ router.post('/users/login', async (req, res) => {
     const token = await user.generateAuthToken();
 
     // sending updated user and the session token
-    res.send({ user, token });
+    res.status(200).send({ user, token });
   } catch (error) {
     res.status(404).send('Login failed.');
   }
 });
 
-// logging a user out
+// route to log a user out
 router.post('/users/logout', auth, async (req, res) => {
   try {
     // remove the token from the current tokens property of a user
@@ -55,6 +55,43 @@ router.post('/users/logout', auth, async (req, res) => {
     res.send('You have been logged off from the session.');
   } catch (error) {
     res.status(500).send('Logout failed.');
+  }
+});
+
+// route to check current user profile
+router.get('/users/me', auth, async (req, res) => {
+  try {
+    res.send(req.user);
+  } catch (error) {
+    res.status(500).send("Can't load user profile.");
+  }
+});
+
+// route to update a user profile
+router.patch('/users/me', auth, async (req, res) => {
+  // get all keys from the incoming request body
+  const updates = Object.keys(req.body);
+
+  // save to array all fields that user is allowed to update
+  const allowedFieldsToUpdate = ['name', 'email', 'password', 'username'];
+
+  // array method to check if all keys from req.body are allowed
+  const isValidOperation = updates.every((update) =>
+    allowedFieldsToUpdate.includes(update)
+  );
+
+  if (!isValidOperation) res.status(400).send('Failed to update user profile.');
+
+  try {
+    // loop through updates
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+
+    // save updated key-value pairs to mongodb
+    await req.user.save();
+
+    res.status(200).send(`Profile updated. --- ${req.user}`);
+  } catch (error) {
+    res.status(500).send(`Update failed.`);
   }
 });
 // exporting router
